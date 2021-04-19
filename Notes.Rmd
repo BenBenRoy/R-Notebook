@@ -1,0 +1,51 @@
+---
+title: "**_R Review Ruoyu_**"
+output: 
+  html_notebook: 
+    toc: yes
+---
+Purpose of this document is to provide a succint guide on how to employ R's graphics.
+<!-- This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.  -->
+
+<!-- Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.  -->
+
+# ggplot2
+## 1. Simple Illustration
+1. Data structure must be **data frame**. 
+
+2. Variable that is mapped to an *aesthetic* must be stored in column (long data format).
+
+See below data frame for example.
+```{r}
+dat<-data.frame(xval=1:4, yval=c(3,5,6,9), group=c("A","B","A","B"))
+dat
+```
+
+Step 1: Creates a **ggplot* object and specify default mapping.
+```{r}
+declare<-ggplot(dat,aes(x=xval,y=yval))
+declare
+
+```
+
+Step 2: Specify *Geometric Object* (e.g. bars, lines, points and et.al). Example uses points.
+```{r warning=TRUE}
+
+declare_object <- declare+geom_point()
+declare_object
+
+
+
+```
+
+
+
+Step 3: Customise Geometric Object
+```{r}
+declare_object_map<-declare + geom_point(aes(colour=group))
+declare_object_map
+
+
+```
+
+
