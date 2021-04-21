@@ -1,16 +1,182 @@
 ---
-title: "**_R Review Ruoyu_**"
-output: 
-  html_notebook: 
+title: '**_R Review Ruoyu_**'
+output:
+  html_notebook:
     toc: yes
+  # html_document:
+  #   df_print: paged
+  #   toc: yes
 ---
+```{r}
+# install.packages("rmarkdown")
+# install.packages("knitr")
+# install.packages("tinytex")
+# install.packages("here")
+# install.packages("tidyverse")
+# install.packages("broom")
+# install.packages("fs")
+# install.packages("usethis")
+# install.packages("gcookbook")
+
+# library(rmarkdown)
+# library(knitr)
+# library(tinytex)
+# library(here)
+# library(tidyverse)
+# library(broom)
+# library(fs)
+# library(usethis)
+# library(gcookbook)
+```
+
 Purpose of this document is to provide a succint guide on how to employ R's graphics.
 <!-- This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.  -->
 
 <!-- Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.  -->
 
+# R Object
+An *Object* is anything that can be assigned to a variable. This includes constants, data structures, functions, and graphs.
+
+Object has *mode*  and *class*.
+
+*mode*: describes how the object is stored.
+
+*class*: tells generic functions how to handle it.
+
+# Data Structure
+Basically, how R holds data.
+
+## 1. Vector
+1. One dimensional
+
+2. Data in a vector must only be one type (i.e. numeric, character, or logical)
+```{r}
+vector_numeric<-c(1,2,3)
+vector_numeric
+vector_character<-c("a","b","c")
+vector_character
+vector_logical<-c(TRUE,FALSE)
+vector_logical
+vector_mix <- c(1,"two",3,TRUE)
+vector_mix
+```
+
+## 2. Matrix
+1. Two dimensional
+
+2. Each element has the same type or mode.
+
+Matrix is filled by column by default. See the example below:
+```{r}
+matrix_col <- matrix(1:20, nrow=4, ncol=5)
+matrix_col
+```
+Fill by row option:
+```{r}
+matrix_row <- matrix(1:20, nrow=4, ncol=5, byrow = T)
+```
+Add row and column names:
+```{r}
+col_name<-c("c1","c2","c3","c4","c5")
+row_name<-c("R1","R2","R3","R4")
+matrix_name<-matrix(1:20,nrow=4,byrow=T,dimnames = list(row_name,col_name))
+matrix_name
+```
+
+## 3. Array
+1. Multi-dimensional.
+
+2. Each element has the same mode.
+
+```{r}
+dim1_name<-c("r1","r2")
+dim2_name<-c("c1","c2")
+dim3_name<-c("z1","z2")
+array_3_dim<-array(1:8,c(2,2,2),dimnames = list(dim1_name,dim2_name,dim3_name))
+array_3_dim
+```
+
+Identify an element by specifying its location:
+```{r}
+array_3_dim[1,1,2]
+```
+
+
+## 4. Data frame
+1. More general than matrix: different columns can have different modes of data.
+
+Create a data frame
+```{r}
+patientID<-c(1,2,3,4)
+diabetes<-c("Type1","Type2","Type1","Type1")
+status<-c("Poor","Improved","Excellent","Poor")
+patient_data<-data.frame(patientID,diabetes,status)
+patient_data
+```
+Specifying elements of data frame
+```{r}
+patient_data$status
+```
+
+
+## 5. List
+1. A list is an ordered collection of objects.
+
+A list may contain a combination of *vectors*,*matrices*, *data frames* and other *lists*. Typically:
+
+*mylist <- list(name1=object1, name2=object2, ...)*
+
+```{r}
+list_title<-"title of my list"
+object_vector<-c("F","M","F","F")
+object_data<-patient_data
+
+mylist <-list(title=list_title,gender=object_vector,rawdata=object_data)
+mylist
+```
+Specify elements in list by indicating object number or name within double brackets:
+
+```{r}
+mylist[[2]]
+mylist[["gender"]]
+```
+
+
+# Data Type
+## 1. Numeric
+## 2. Character
+### 2.1.1 Factors
+Categorical (nominal) and ordered categorical (ordinal) variables in R are called factors.
+
+*factor()* stores the categorical value (i.e. diabetes) as a vector of integers in the range [1:k] (where **k** is the number of unique values). (i.e. mode= **numeric**, class=**factor**)
+
+Nominal categorical variable:
+```{r}
+diabetes <- c("Type1","Type2","Type1","Type2")
+diabetes_factor<-factor(diabetes)
+diabetes_factor
+mode(diabetes_factor)
+class(diabetes)
+```
+Ordinal categorical variable:
+```{r}
+status<-c("poor","improved","excellent")
+# default alphabetical order
+status_ordered<-factor(status, order=T)
+status_ordered
+# manual order
+status_manual_order<-factor(status,order=T, 
+                            levels=c("poor","improved","excellent"))
+status_manual_order
+```
+
+
+<!-- ## 3. Logical -->
+<!-- ## 4. Complext -->
+<!-- ## 5. Raw -->
+
 # ggplot2
-## 1. Simple Illustration
+## 1. Simple illustration
 1. Data structure must be **data frame**. 
 
 2. Variable that is mapped to an *aesthetic* must be stored in column (long data format).
@@ -21,31 +187,86 @@ dat<-data.frame(xval=1:4, yval=c(3,5,6,9), group=c("A","B","A","B"))
 dat
 ```
 
-Step 1: Creates a **ggplot* object and specify default mapping.
+Step 1: Creates a *ggplot* object and specify default mapping.
 ```{r}
-declare<-ggplot(dat,aes(x=xval,y=yval))
-declare
+library(ggplot2)
+assign<-ggplot(dat,aes(x=xval,y=yval))
+assign
 
 ```
 
 Step 2: Specify *Geometric Object* (e.g. bars, lines, points and et.al). Example uses points.
-```{r warning=TRUE}
+```{r warning=FALSE}
 
-declare_object <- declare+geom_point()
-declare_object
-
-
-
+assign_object <- assign+geom_point()
+assign_object
 ```
 
 
 
 Step 3: Customise Geometric Object
 ```{r}
-declare_object_map<-declare + geom_point(aes(colour=group))
-declare_object_map
-
-
+assign_object_map<-assign + geom_point(aes(colour=group))
+assign_object_map
 ```
 
 
+
+## 2. Line graph
+
+
+### 2.1 Basic line graph
+```{r}
+BOD
+ggplot(BOD,aes(x=Time, y=demand))+geom_line()
+
+BOD1 <- BOD  # Make a copy of the data
+BOD1$Time <- factor(BOD1$Time) 
+# since x is categorical, 6 is not shown in the horizontal axis
+ggplot(BOD1, aes(x = Time, y = demand, group = 1)) +
+  geom_line()
+```
+<!-- ### 2.1 Control the range of axes -->
+<!-- # ```{r warning=FALSE} -->
+<!-- # # These have the same result -->
+<!-- # ggplot(BOD, aes(x = Time, y = demand)) + -->
+<!-- #   geom_line() + -->
+<!-- #   ylim(0, max(BOD$demand)) -->
+<!-- #  -->
+<!-- # ggplot(BOD, aes(x = Time, y = demand)) + -->
+<!-- #   geom_line() + -->
+<!-- #   expand_limits(y = 0) -->
+<!-- # ``` -->
+
+### 2.2 Lines grouping
+
+
+```{r}
+library("gcookbook")  # Load gcookbook for the tg data set
+ggplot(tg, aes(x = dose, y = length)) +
+  geom_line()
+
+# If any discrete variables are mapped to aesthetics (e.g. colour, linetype), they are automatically used as grouping variables.
+ggplot(tg, aes(x = dose, y = length, colour = supp)) +
+  geom_line()
+```
+When in doubt, try explicitly specifying the grouping variables with *group*
+```{r}
+ggplot(tg, aes(x = dose, y = length, group = supp)) +
+  geom_line()
+```
+
+### 2.3 Line properties
+
+1. *linetype*: type of line (solid, dashed, dotted, etc.)
+
+2. *size*: thickness in mm
+
+3. *colour*
+
+**Specify line properties outside of aesthetics *aes()* will set a single property for all lines.**
+```{r}
+ggplot(tg, aes(x = dose, y = length))            + geom_line(aes(colour=supp,  linetype=supp))
+ggplot(tg, aes(x = dose, y = length, group=supp))+ geom_line(colour="blue",linetype="dotted")
+```
+## 3. Histogram
