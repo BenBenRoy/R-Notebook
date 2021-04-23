@@ -17,16 +17,20 @@ output:
 # install.packages("fs")
 # install.packages("usethis")
 # install.packages("gcookbook")
-
-# library(rmarkdown)
-# library(knitr)
-# library(tinytex)
-# library(here)
-# library(tidyverse)
-# library(broom)
-# library(fs)
-# library(usethis)
-# library(gcookbook)
+# install.packages("patchwork")
+# install.packages("ggrepel")
+library(ggrepel)
+library(dplyr)
+library(patchwork)
+library(rmarkdown)
+library(knitr)
+library(tinytex)
+library(here)
+library(tidyverse)
+library(broom)
+library(fs)
+library(usethis)
+library(gcookbook)
 ```
 
 Purpose of this document is to provide a succint guide on how to employ R's graphics.
@@ -181,13 +185,23 @@ status_manual_order
 
 2. Variable that is mapped to an *aesthetic* must be stored in column (long data format).
 
+
+**Common procedures**:
+
+    Step 1: Creates a *ggplot* object and specify default mapping.
+
+    Step 2: Specify *Geometric Object* (e.g. bars, lines, points and et.al). Example uses points.
+
+    Step 3: Customise Geometric Object.  
+
+<p>&nbsp;</p>
 See below data frame for example.
 ```{r}
 dat<-data.frame(xval=1:4, yval=c(3,5,6,9), group=c("A","B","A","B"))
 dat
 ```
 
-Step 1: Creates a *ggplot* object and specify default mapping.
+**Step 1: Creates a *ggplot* object and specify default mapping.**
 ```{r}
 library(ggplot2)
 assign<-ggplot(dat,aes(x=xval,y=yval))
@@ -195,7 +209,7 @@ assign
 
 ```
 
-Step 2: Specify *Geometric Object* (e.g. bars, lines, points and et.al). Example uses points.
+**Step 2: Specify *Geometric Object* (e.g. bars, lines, points and et.al). Example uses points.**
 ```{r warning=FALSE}
 
 assign_object <- assign+geom_point()
@@ -204,7 +218,7 @@ assign_object
 
 
 
-Step 3: Customise Geometric Object
+**Step 3: Customise Geometric Object**
 ```{r}
 assign_object_map<-assign + geom_point(aes(colour=group))
 assign_object_map
@@ -219,6 +233,8 @@ assign_object_map
 ```{r}
 BOD
 ggplot(BOD,aes(x=Time, y=demand))+geom_line()
+# alternatively
+ggplot(NULL,aes(x=BOD$Time, y=BOD$demand))+geom_line()
 
 BOD1 <- BOD  # Make a copy of the data
 BOD1$Time <- factor(BOD1$Time) 
@@ -243,12 +259,14 @@ ggplot(BOD1, aes(x = Time, y = demand, group = 1)) +
 
 ```{r}
 library("gcookbook")  # Load gcookbook for the tg data set
-ggplot(tg, aes(x = dose, y = length)) +
+line_nill_group<-ggplot(tg, aes(x = dose, y = length)) +
   geom_line()
 
 # If any discrete variables are mapped to aesthetics (e.g. colour, linetype), they are automatically used as grouping variables.
-ggplot(tg, aes(x = dose, y = length, colour = supp)) +
-  geom_line()
+line_group<-ggplot(tg, aes(x = dose, y = length, colour = supp)) +
+  geom_line()+geom_text_repel(aes(label=length),size=1.8)+facet_wrap(~supp)
+# Combine into one graph
+line_nill_group + line_group + plot_annotation(title='with/without grouping line graph by supp')
 ```
 When in doubt, try explicitly specifying the grouping variables with *group*
 ```{r}
@@ -270,3 +288,88 @@ ggplot(tg, aes(x = dose, y = length))            + geom_line(aes(colour=supp,  l
 ggplot(tg, aes(x = dose, y = length, group=supp))+ geom_line(colour="blue",linetype="dotted")
 ```
 ## 3. Histogram
+### 3.1 Basic histogram
+
+    Note: The bins are closed on the lower bound and open on the upper bound (e.g [1,2)).
+```{r}
+head(faithful)
+# 30 bins by default
+histogram_default<-ggplot(faithful, aes(x=waiting)) + geom_histogram()
+# customise binsize
+histogram_customise<-ggplot(faithful, aes(x=waiting)) +
+                geom_histogram(binwidth = 5, fill="white", colour="black")
+
+# library(patchwork)
+histogram_default+histogram_customise # lib=patchwork, combine two historgrams
+
+
+```
+
+
+### 3.2 Histogram grouping
+
+```{r}
+library(MASS)
+head(birthwt)
+```
+<p>&nbsp;</p>
+
+    The grouping variable must be a factor or character vector.
+```{r}
+library("dplyr") # in order to invoke 'recode_factor'
+birthwt$smoke_factor<-recode_factor(birthwt$smoke, "0"="No Smoke", "1"="smoke")
+ggplot(birthwt, aes(x=bwt, fill=smoke_factor)) + geom_histogram(binwidth=200, colour="black", position="identity", alpha=0.5)
+```
+    
+
+## 4. Bar chart
+### 4.1 Basic bar chart
+```{r}
+# basic bar chart
+bar_default<-ggplot(pg_mean, aes(x=group, y=weight)) + geom_col()
+# customise bar chart
+bar_customise<-ggplot(pg_mean,aes(x=group,y=weight)) + geom_col(fill="lightblue",colour="black")
+# combine charts
+bar_default+bar_customise
+```
+
+
+### 4.2 Bar chart grouping
+
+    Use 'position' option to customise stacked or side by side.
+```{r}
+head(cabbage_exp)
+# side by side bar chart
+bar_SS<-ggplot(cabbage_exp,aes(x=Date, y=Weight, fill=Cultivar)) + geom_col(position="dodge", colour="black")
+# stacked bar chart
+bar_stacked<-ggplot(cabbage_exp,aes(x=Date, y=Weight, fill=Cultivar)) + geom_col(position="stack", colour="black") #default is stack
+# stacked proportional bar chart
+bar_proportional<-ggplot(cabbage_exp,aes(x=Date, y=Weight, fill=Cultivar)) + geom_col(position="fill", colour="black")
+# combine charts
+bar_SS+bar_stacked +bar_proportional
+```
+when y value is provided, geom_col() := geom_bar(stat="identity")
+
+```{r}
+ggplot(diamonds, aes(x=cut, fill=cut))+geom_bar(stat="count", colour="black")
+
+```
+### 4.3 Add label
+
+    1. Add geom_text() to graph requires a mpping for x,y and the text itself.
+    2. vjust adjusts locations of label above or below the tops of the bars.
+
+
+Tell geom_text() to use "count" statistic to compute the number of rows for each x value.
+```{r}
+ggplot(diamonds, aes(x=cut, fill=cut))+geom_bar(stat="count", colour="black")+
+                                       geom_text(stat='count', aes(label=..count..),vjust=-0.2, colour="Red")
+```
+
+
+## x. Other customisations
+### 1. label data point geom_text\geom_text_repel
+
+### 2. manual colouring
+
+### 3. annotate legend 
