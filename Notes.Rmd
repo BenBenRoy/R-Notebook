@@ -264,7 +264,7 @@ line_nill_group<-ggplot(tg, aes(x = dose, y = length)) +
 
 # If any discrete variables are mapped to aesthetics (e.g. colour, linetype), they are automatically used as grouping variables.
 line_group<-ggplot(tg, aes(x = dose, y = length, colour = supp)) +
-  geom_line()+geom_text_repel(aes(label=length),size=1.8)+facet_wrap(~supp)
+  geom_line()+geom_text_repel(aes(label=length),size=1.8)+facet_wrap(~supp)+geom_point()
 # Combine into one graph
 line_nill_group + line_group + plot_annotation(title='with/without grouping line graph by supp')
 ```
@@ -319,6 +319,7 @@ head(birthwt)
 library("dplyr") # in order to invoke 'recode_factor'
 birthwt$smoke_factor<-recode_factor(birthwt$smoke, "0"="No Smoke", "1"="smoke")
 ggplot(birthwt, aes(x=bwt, fill=smoke_factor)) + geom_histogram(binwidth=200, colour="black", position="identity", alpha=0.5)
+
 ```
     
 
