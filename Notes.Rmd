@@ -39,13 +39,19 @@ Purpose of this document is to provide a succint guide on how to employ R's grap
 <!-- Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.  -->
 
 # R Object
+
+[Tidyverse package](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf)
+
 An *Object* is anything that can be assigned to a variable. This includes constants, data structures, functions, and graphs.
 
-Object has *mode*  and *class*.
+    object Structure: str()
+    object Metadata : attributes()  (e.g. "Names", "Class")
+    object Mode     : mode()
+
 
 *mode*: describes how the object is stored.
 
-*class*: tells generic functions how to handle it.
+*class*: tells generic functions how to handle it (see [Object Oriented Programming](http://adv-r.had.co.nz/OO-essentials.html#s3)).
 
 # Data Structure
 Basically, how R holds data.
@@ -148,7 +154,10 @@ mylist[["gender"]]
 
 # Data Type
 ## 1. Numeric
+It can be further grouped into *integer* and *double*.
+
 ## 2. Character
+
 ### 2.1.1 Factors
 Categorical (nominal) and ordered categorical (ordinal) variables in R are called factors.
 
@@ -185,6 +194,7 @@ status_manual_order
 
 2. Variable that is mapped to an *aesthetic* must be stored in column (long data format).
 
+[ggplot2 cheat sheet](file://svrau570bsm00.oceania.corp.anz.com/gongr$/Downloads/data-visualization-2.1.pdf)
 
 **Common procedures**:
 
@@ -357,6 +367,8 @@ ggplot(diamonds, aes(x=cut, fill=cut))+geom_bar(stat="count", colour="black")
 ```
 ### 4.3 Add label
 
+
+
     1. Add geom_text() to graph requires a mpping for x,y and the text itself.
     2. vjust adjusts locations of label above or below the tops of the bars.
 
@@ -366,6 +378,13 @@ Tell geom_text() to use "count" statistic to compute the number of rows for each
 ggplot(diamonds, aes(x=cut, fill=cut))+geom_bar(stat="count", colour="black")+
                                        geom_text(stat='count', aes(label=..count..),vjust=-0.2, colour="Red")
 ```
+
+## 5. Statistical transformation
+
+Each stat creates additional variables to map aesthetics to. These variables use a common **..name..** syntax.
+
+Every **geom** has a default **stat**, and every **stat** has a default **geom**.
+
 
 
 ## x. Other customisations
